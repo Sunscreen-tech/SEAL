@@ -1,0 +1,206 @@
+#pragma once
+
+#include "seal/context.h"
+#include "seal/ciphertext.h"
+#include "seal/memorymanager.h"
+#include "seal/publickey.h"
+#include <stdexcept>
+
+using namespace seal::util;
+
+namespace seal
+{
+
+        /**
+        A class holding an RNS based polynomial array that can only be loaded
+        with data once. This class keeps a copy of the coefficient modulus
+        associated with the array so that it can be used to convert back and
+        forth between RNS and multiprecision form.
+        */
+        class StaticPolynomialArray
+        {
+            public:
+                /**
+                Creates an uninitialized StaticPolynomialArray instance from a
+                given pool. This is created so that a reference can be passed
+                into a function and whatever polynomial array of interest can be
+                converted into functions that return a polynomial array.
+                */
+                StaticPolynomialArray(MemoryPoolHandle pool = MemoryManager::GetPool()):
+                pool_(std::move(pool))
+                {}
+
+                /**
+                Create a StaticPolynomialArray from a ciphertext.
+                */
+                StaticPolynomialArray(
+                    const SEALContext &context, const Ciphertext &ciphertext, MemoryPoolHandle pool
+                );
+
+                /**
+                Create a StaticPolynomialArray from a public key. Note that the
+                special modulus is dropped from this representation.
+                */
+                StaticPolynomialArray(
+                    const SEALContext &context, const PublicKey &public_key, MemoryPoolHandle pool
+                );
+
+                /**
+                Reserve space for a specfic polynomial. This can only be called
+                once; further calls with throw a logic error indicating that the
+                array has already been reserved.
+                */
+                void reserve(
+                    std::size_t poly_size, std::size_t coeff_size, const std::vector<Modulus> &rnsbase
+                );
+
+                /**
+                Whether or not the polynomial array has been loaded with data.
+                */
+                bool is_reserved() {
+                    return reserved_;
+                }
+
+                /**
+                A polynomial array can either be represented in RNS form, or in
+                multi-precision form. Returns whether it is currently in RNS form.
+                */
+                bool is_rns() {
+                    return is_rns_;
+                }
+
+                /**
+                A polynomial array can either be represented in RNS form, or in
+                multi-precision form. Returns whether it is currently in
+                multi-precision form.
+                */
+                bool is_multiprecision() {
+                    return !is_rns_;
+                }
+
+                /**
+                Insert a polynomial into the data array of the
+                */
+                void insert_polynomial(std::size_t poly_index, const uint64_t* array) {
+                    auto poly_start = get_polynomial(poly_index);
+                    util::set_uint(array, poly_len_, poly_start);
+                }
+
+                /**
+                Modifies the polynomial array in place to multi-precision form.
+                */
+                void to_multiprecision();
+
+                /**
+                Modifies the polynomial array in place to RNS form.
+                */
+                void to_rns();
+
+                /**
+                Return a reference to the first element of the polynomial array.
+                */
+                SEAL_NODISCARD inline std::uint64_t *get() noexcept
+                {
+                    return data_.get();
+                }
+
+                /**
+                Return a constant reference to the first element of the polynomial array.
+                */
+                SEAL_NODISCARD inline const std::uint64_t *get() const noexcept
+                {
+                    return data_.get();
+                }
+
+                /**
+                Get a pointer to the start of a specific polynomial in the
+                polynomial array. Throws a logic error if the index is larger
+                than the number of polynomials held by the polynomial array.
+                */
+                SEAL_NODISCARD inline std::uint64_t* get_polynomial(std::size_t poly_index) 
+                {
+                    if (poly_index >= poly_size_) {
+                        throw std::logic_error("Polynomial outside of RNS array count");
+                    }
+   
+                    auto poly_start = data_.get() + poly_len_ * poly_index;
+                    return poly_start;
+                }
+
+                /**
+                Returns the number of polynomials stored.
+                */
+                SEAL_NODISCARD inline std::size_t poly_size() const noexcept
+                {
+                    return poly_size_;
+                }
+
+                /**
+                Returns the number of coefficient in each polynomial stored.
+                */
+                SEAL_NODISCARD inline std::size_t poly_modulus_degree() const noexcept
+                {
+                    return coeff_size_;
+                }
+
+                /**
+                Returns the number of primes in the coefficient modulus of the
+                associated encryption parameters.
+                */
+                SEAL_NODISCARD inline std::size_t coeff_modulus_size() const noexcept
+                {
+                    return coeff_modulus_size_;
+                }
+
+
+                /**
+                Returns how many uint64_t are used to store the array. For use
+                with `perform_export`.
+                */
+                SEAL_NODISCARD inline std::size_t export_size() const
+                {
+                    return len_;
+                }
+
+                /**
+                Copy the polynomial array to a data buffer.
+                */
+                void perform_export(uint64_t *data) const
+                {
+                    util::set_uint(data_.get(), len_, data);
+                }
+
+
+            private:
+                // We make an independent function instead of setting on
+                // initialization so that we can allocate a
+                // StaticPolynomialArray without knowing the modulus yet (it
+                // gets passed in later)
+                void set_modulus(const std::vector<Modulus> &coeff_modulus){
+                    coeff_modulus_size_ = coeff_modulus.size();
+
+                    // Other classes do a check that the modulus set is correct;
+                    // the assumption here is that we are creating an instance
+                    // of this class from an existing (verified) modulus set.
+                    coeff_modulus_ = allocate<Modulus>(coeff_modulus_size_, pool_);
+                    copy_n(coeff_modulus.cbegin(), coeff_modulus_size_, coeff_modulus_.get());
+
+                    rnsbase_ = allocate<RNSBase>(pool_, coeff_modulus, pool_);
+                }
+
+                MemoryPoolHandle pool_;
+                Pointer<uint64_t> data_;
+                Pointer<Modulus> coeff_modulus_;
+                Pointer<RNSBase> rnsbase_;
+
+                std::size_t poly_size_ = 0;
+                std::size_t coeff_size_ = 0;
+                std::size_t coeff_modulus_size_ = 0;
+                std::size_t poly_len_ = 0;
+                std::size_t len_ = 0;
+                bool reserved_ = false;
+
+                // Is this array in RNS form or in multiprecision form?
+                bool is_rns_ = true;
+        };
+}
