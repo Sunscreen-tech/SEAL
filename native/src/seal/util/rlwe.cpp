@@ -189,32 +189,6 @@ namespace seal
             }
         }
 
-
-        // Convert RNS form back to positional. This assumes that the positional
-        // value was less than all of the moduli to start, and hence we can
-        // convert using only one residual. This also means the results can be
-        // stored in a machine integer.
-        // Not needed, as RNSBase::compose will return the result. The advantage
-        // of this method is that it is likely faster and also converts to
-        // negative numbers.
-        void convert_small_to_positional(CoeffIter data, vector<int64_t>& output, uint64_t coeff_count, const vector<Modulus>& coeff_modulus) {
-            output.resize(coeff_count);
-
-            auto first_coeff_mod = coeff_modulus[0].value();
-            auto first_coeff_mod_half = first_coeff_mod / 2;
-
-            for (int i = 0; i < coeff_count; i++) {
-                // The first residual for each element in the polynomial/array.
-                auto first_residual_i = data[i];
-
-                if (first_residual_i > first_coeff_mod_half) {
-                    output[i] = first_residual_i - first_coeff_mod;
-                } else {
-                    output[i] = first_residual_i;
-                }
-            }
-        }
-
         void encrypt_zero_asymmetric(
             const PublicKey &public_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
             bool export_noise,
@@ -255,8 +229,6 @@ namespace seal
             auto prng = parms.random_generator()->create();
 
             // Generate u <-- R_3
-            auto len = coeff_count * coeff_modulus_size;
-
             auto u(allocate_poly(coeff_count, coeff_modulus_size, pool));
             sample_poly_ternary(prng, parms, u.get());
 
@@ -264,13 +236,6 @@ namespace seal
                 u_destination.reserve(1, coeff_count, coeff_modulus);
                 u_destination.insert_polynomial(0, u.get());
             }
-
-            auto u_copy(allocate_uint(len, pool));
-            set_uint(u.get(), len, u_copy.get());
-
-            auto rns = RNSBase(coeff_modulus, pool);
-
-            rns.compose_array(u_copy.get(), coeff_count, pool);
 
             // c[j] = u * public_key[j]
             for (size_t i = 0; i < coeff_modulus_size; i++)

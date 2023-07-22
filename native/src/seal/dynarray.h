@@ -312,9 +312,7 @@ namespace seal
         {
             if (index >= size_)
             {
-                char buffer[1024];
-                snprintf(buffer, 1024, "index = %lu must be within [0, size = %lu)", index, size_);
-                throw std::out_of_range(buffer);
+                throw std::out_of_range("index must be within [0, size)");
             }
             return data_[index];
         }
@@ -331,9 +329,7 @@ namespace seal
         {
             if (index >= size_)
             {
-                char buffer[1024];
-                snprintf(buffer, 1024, "index = %lu must be within [0, size = %lu)", index, size_);
-                throw std::out_of_range(buffer);
+                throw std::out_of_range("index must be within [0, size)");
             }
             return data_[index];
         }
