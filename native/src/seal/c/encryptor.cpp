@@ -147,9 +147,9 @@ SEAL_C_FUNC Encryptor_EncryptReturnComponents(
     IfNullRet(plain, E_POINTER);
     Ciphertext *cipher = FromVoid<Ciphertext>(destination);
     IfNullRet(cipher, E_POINTER);
-    StaticPolynomialArray *u_dest = FromVoid<StaticPolynomialArray>(u_destination);
+    PolynomialArray *u_dest = FromVoid<PolynomialArray>(u_destination);
     IfNullRet(u_dest, E_POINTER);
-    StaticPolynomialArray *e_dest = FromVoid<StaticPolynomialArray>(e_destination);
+    PolynomialArray *e_dest = FromVoid<PolynomialArray>(e_destination);
     IfNullRet(e_dest, E_POINTER);
     unique_ptr<MemoryPoolHandle> pool = MemHandleFromVoid(pool_handle);
 

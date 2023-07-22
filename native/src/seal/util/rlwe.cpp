@@ -193,8 +193,8 @@ namespace seal
             const PublicKey &public_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
             bool export_noise,
             Ciphertext &destination, 
-            StaticPolynomialArray &u_destination,
-            StaticPolynomialArray &e_destination
+            PolynomialArray &u_destination,
+            PolynomialArray &e_destination
         ) {
 #ifdef SEAL_DEBUG
             if (!is_valid_for(public_key, context))

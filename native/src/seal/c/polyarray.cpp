@@ -14,14 +14,14 @@ using namespace seal::util;
 
 
 
-SEAL_C_FUNC StaticPolynomialArray_Create(void *memoryPoolHandle, void **poly_array)
+SEAL_C_FUNC PolynomialArray_Create(void *memoryPoolHandle, void **poly_array)
 {
     IfNullRet(poly_array, E_POINTER);
     unique_ptr<MemoryPoolHandle> handle = MemHandleFromVoid(memoryPoolHandle);
 
     try
     {
-        StaticPolynomialArray *array = new StaticPolynomialArray(*handle);
+        PolynomialArray *array = new PolynomialArray(*handle);
         *poly_array = array;
         return S_OK;
     }
@@ -31,7 +31,7 @@ SEAL_C_FUNC StaticPolynomialArray_Create(void *memoryPoolHandle, void **poly_arr
     }
 }
 
-SEAL_C_FUNC StaticPolynomialArray_CreateFromCiphertext(void *memoryPoolHandle, void *context, void *ciphertext, void **poly_array)
+SEAL_C_FUNC PolynomialArray_CreateFromCiphertext(void *memoryPoolHandle, void *context, void *ciphertext, void **poly_array)
 {
     const SEALContext *ctx = FromVoid<SEALContext>(context);
     IfNullRet(ctx, E_POINTER);
@@ -44,7 +44,7 @@ SEAL_C_FUNC StaticPolynomialArray_CreateFromCiphertext(void *memoryPoolHandle, v
 
     try
     {
-        StaticPolynomialArray *array = new StaticPolynomialArray(*ctx, *cipher, *handle);
+        PolynomialArray *array = new PolynomialArray(*ctx, *cipher, *handle);
         *poly_array = array;
         return S_OK;
     }
@@ -54,7 +54,7 @@ SEAL_C_FUNC StaticPolynomialArray_CreateFromCiphertext(void *memoryPoolHandle, v
     }
 }
 
-SEAL_C_FUNC StaticPolynomialArray_CreateFromPublicKey(void *memoryPoolHandle, void *context, void *public_key, void **poly_array)
+SEAL_C_FUNC PolynomialArray_CreateFromPublicKey(void *memoryPoolHandle, void *context, void *public_key, void **poly_array)
 {
     const SEALContext *ctx = FromVoid<SEALContext>(context);
     IfNullRet(ctx, E_POINTER);
@@ -67,7 +67,7 @@ SEAL_C_FUNC StaticPolynomialArray_CreateFromPublicKey(void *memoryPoolHandle, vo
 
     try
     {
-        StaticPolynomialArray *array = new StaticPolynomialArray(*ctx, *pk, *handle);
+        PolynomialArray *array = new PolynomialArray(*ctx, *pk, *handle);
         *poly_array = array;
         return S_OK;
     }
@@ -77,18 +77,18 @@ SEAL_C_FUNC StaticPolynomialArray_CreateFromPublicKey(void *memoryPoolHandle, vo
     }
 }
 
-SEAL_C_FUNC StaticPolynomialArray_Destroy(void *thisptr)
+SEAL_C_FUNC PolynomialArray_Destroy(void *thisptr)
 {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
 
     delete poly_array;
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_IsReserved(void *thisptr, bool *is_reserved)
+SEAL_C_FUNC PolynomialArray_IsReserved(void *thisptr, bool *is_reserved)
 {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(is_reserved, E_POINTER);
 
@@ -96,9 +96,9 @@ SEAL_C_FUNC StaticPolynomialArray_IsReserved(void *thisptr, bool *is_reserved)
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_IsRns(void *thisptr, bool *is_rns)
+SEAL_C_FUNC PolynomialArray_IsRns(void *thisptr, bool *is_rns)
 {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(is_rns, E_POINTER);
 
@@ -106,9 +106,9 @@ SEAL_C_FUNC StaticPolynomialArray_IsRns(void *thisptr, bool *is_rns)
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_IsMultiprecision(void *thisptr, bool *is_multiprecision)
+SEAL_C_FUNC PolynomialArray_IsMultiprecision(void *thisptr, bool *is_multiprecision)
 {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(is_multiprecision, E_POINTER);
 
@@ -116,8 +116,8 @@ SEAL_C_FUNC StaticPolynomialArray_IsMultiprecision(void *thisptr, bool *is_multi
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_ToRns(void *thisptr) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_ToRns(void *thisptr) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
 
     poly_array->to_rns();
@@ -125,8 +125,8 @@ SEAL_C_FUNC StaticPolynomialArray_ToRns(void *thisptr) {
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_ToMultiprecision(void *thisptr) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_ToMultiprecision(void *thisptr) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
 
     poly_array->to_multiprecision();
@@ -135,8 +135,8 @@ SEAL_C_FUNC StaticPolynomialArray_ToMultiprecision(void *thisptr) {
 
 }
 
-SEAL_C_FUNC StaticPolynomialArray_GetPolynomial(void *thisptr, uint64_t poly_index, uint64_t *data){
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_GetPolynomial(void *thisptr, uint64_t poly_index, uint64_t *data){
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(data, E_POINTER);
 
@@ -151,8 +151,8 @@ SEAL_C_FUNC StaticPolynomialArray_GetPolynomial(void *thisptr, uint64_t poly_ind
     }
 }
 
-SEAL_C_FUNC StaticPolynomialArray_ExportSize(void *thisptr, uint64_t *size) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_ExportSize(void *thisptr, uint64_t *size) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(size, E_POINTER);
 
@@ -160,8 +160,8 @@ SEAL_C_FUNC StaticPolynomialArray_ExportSize(void *thisptr, uint64_t *size) {
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_PerformExport(void *thisptr, uint64_t *data) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_PerformExport(void *thisptr, uint64_t *data) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(data, E_POINTER);
 
@@ -170,8 +170,8 @@ SEAL_C_FUNC StaticPolynomialArray_PerformExport(void *thisptr, uint64_t *data) {
 }
 
 
-SEAL_C_FUNC StaticPolynomialArray_PolySize(void *thisptr, uint64_t *size) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_PolySize(void *thisptr, uint64_t *size) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(size, E_POINTER);
 
@@ -179,8 +179,8 @@ SEAL_C_FUNC StaticPolynomialArray_PolySize(void *thisptr, uint64_t *size) {
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_PolyModulusDegree(void *thisptr, uint64_t *size) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_PolyModulusDegree(void *thisptr, uint64_t *size) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(size, E_POINTER);
 
@@ -188,8 +188,8 @@ SEAL_C_FUNC StaticPolynomialArray_PolyModulusDegree(void *thisptr, uint64_t *siz
     return S_OK;
 }
 
-SEAL_C_FUNC StaticPolynomialArray_CoeffModulusSize(void *thisptr, uint64_t *size) {
-    StaticPolynomialArray *poly_array = FromVoid<StaticPolynomialArray>(thisptr);
+SEAL_C_FUNC PolynomialArray_CoeffModulusSize(void *thisptr, uint64_t *size) {
+    PolynomialArray *poly_array = FromVoid<PolynomialArray>(thisptr);
     IfNullRet(poly_array, E_POINTER);
     IfNullRet(size, E_POINTER);
 

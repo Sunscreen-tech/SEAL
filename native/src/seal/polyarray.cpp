@@ -7,11 +7,11 @@ using namespace seal::util;
 
 namespace seal
 {
-    StaticPolynomialArray::StaticPolynomialArray(
+    PolynomialArray::PolynomialArray(
         const SEALContext &context,
         const Ciphertext &ciphertext,
         MemoryPoolHandle pool
-    ) : StaticPolynomialArray(pool) {
+    ) : PolynomialArray(pool) {
 
         auto &parms = context.first_context_data()->parms();
         auto &coeff_modulus = parms.coeff_modulus();
@@ -29,11 +29,11 @@ namespace seal
         }
     }
 
-    StaticPolynomialArray::StaticPolynomialArray(
+    PolynomialArray::PolynomialArray(
         const SEALContext &context,
         const PublicKey &public_key,
         MemoryPoolHandle pool
-    ) : StaticPolynomialArray(pool) {
+    ) : PolynomialArray(pool) {
 
         auto &ciphertext = public_key.data();
         auto &parms = context.first_context_data()->parms();
@@ -53,13 +53,13 @@ namespace seal
     }
 
 
-    void StaticPolynomialArray::reserve(
+    void PolynomialArray::reserve(
         std::size_t poly_size,
         std::size_t coeff_size,
         const std::vector<Modulus> &rnsbase
     ) {
         if (reserved_) {
-            throw std::logic_error("StaticPolynomialArray can only be reserved once.");
+            throw std::logic_error("PolynomialArray can only be reserved once.");
         }
 
         set_modulus(rnsbase);
@@ -74,7 +74,7 @@ namespace seal
         reserved_ = true;
     }
 
-    void StaticPolynomialArray::to_multiprecision() {
+    void PolynomialArray::to_multiprecision() {
         // If we are already in multiprecision form then we don't need to convert back.
         if (!is_rns_) {
             return;
@@ -91,7 +91,7 @@ namespace seal
     /**
     Modifies the polynomial array in place to RNS form.
     */
-    void StaticPolynomialArray::to_rns() {
+    void PolynomialArray::to_rns() {
         // If we are already in RNS form then we don't need to convert back.
         if (is_rns_) {
             return;

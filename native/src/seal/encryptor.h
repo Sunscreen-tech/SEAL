@@ -170,8 +170,8 @@ namespace seal
             const Plaintext &plain, 
             bool disable_special_modulus, 
             Ciphertext &destination, 
-            StaticPolynomialArray &u_destination, 
-            StaticPolynomialArray &e_destination, 
+            PolynomialArray &u_destination, 
+            PolynomialArray &e_destination, 
             MemoryPoolHandle pool = MemoryManager::GetPool()) const
         {
             encrypt_internal(plain, true, false, disable_special_modulus, true, destination, u_destination, e_destination, pool);
@@ -464,8 +464,8 @@ namespace seal
             parms_id_type parms_id, bool is_asymmetric, bool save_seed, 
             bool disable_special_modulus,
             bool export_noise, Ciphertext &destination,
-            StaticPolynomialArray &u_destination,
-            StaticPolynomialArray &e_destination,
+            PolynomialArray &u_destination,
+            PolynomialArray &e_destination,
             MemoryPoolHandle pool = MemoryManager::GetPool()) const;
 
         void encrypt_internal(
@@ -478,8 +478,8 @@ namespace seal
             bool disable_special_modulus,
             bool export_noise, 
             Ciphertext &destination,
-            StaticPolynomialArray &u_destination,
-            StaticPolynomialArray &e_destination,
+            PolynomialArray &u_destination,
+            PolynomialArray &e_destination,
             MemoryPoolHandle pool = MemoryManager::GetPool()) const;
 
         SEALContext context_;

@@ -90,8 +90,8 @@ namespace seal
         MemoryPoolHandle pool) const
     {
         // Do not export noise.
-        StaticPolynomialArray u_destination;
-        StaticPolynomialArray e_destination;
+        PolynomialArray u_destination;
+        PolynomialArray e_destination;
 
         encrypt_zero_internal(parms_id, is_asymmetric, save_seed, false, false, destination, u_destination, e_destination, pool);
     }
@@ -100,8 +100,8 @@ namespace seal
         parms_id_type parms_id, bool is_asymmetric, bool save_seed, 
         bool disable_special_modulus,
         bool export_noise, Ciphertext &destination,
-        StaticPolynomialArray &u_destination,
-        StaticPolynomialArray &e_destination,
+        PolynomialArray &u_destination,
+        PolynomialArray &e_destination,
         MemoryPoolHandle pool) const
     {
         // Verify parameters.
@@ -199,8 +199,8 @@ namespace seal
     ) const
     {
         // Do not export noise.
-        StaticPolynomialArray u_destination;
-        StaticPolynomialArray e_destination;
+        PolynomialArray u_destination;
+        PolynomialArray e_destination;
 
         encrypt_internal(plain, is_asymmetric, save_seed, false, false, destination, u_destination, e_destination);
 
@@ -213,8 +213,8 @@ namespace seal
         bool disable_special_modulus,
         bool export_noise,
         Ciphertext &destination,
-        StaticPolynomialArray &u_destination,
-        StaticPolynomialArray &e_destination,
+        PolynomialArray &u_destination,
+        PolynomialArray &e_destination,
         MemoryPoolHandle pool
     ) const
     {

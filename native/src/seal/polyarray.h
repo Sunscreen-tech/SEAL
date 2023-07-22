@@ -17,35 +17,35 @@ namespace seal
         associated with the array so that it can be used to convert back and
         forth between RNS and multiprecision form.
         */
-        class StaticPolynomialArray
+        class PolynomialArray
         {
             public:
                 /**
-                Creates an uninitialized StaticPolynomialArray instance from a
+                Creates an uninitialized PolynomialArray instance from a
                 given pool. This is created so that a reference can be passed
                 into a function and whatever polynomial array of interest can be
                 converted into functions that return a polynomial array.
                 */
-                StaticPolynomialArray(MemoryPoolHandle pool = MemoryManager::GetPool()):
+                PolynomialArray(MemoryPoolHandle pool = MemoryManager::GetPool()):
                 pool_(std::move(pool))
                 {}
 
                 /**
-                Create a StaticPolynomialArray from a ciphertext.
+                Create a PolynomialArray from a ciphertext.
                 */
-                StaticPolynomialArray(
+                PolynomialArray(
                     const SEALContext &context, const Ciphertext &ciphertext, MemoryPoolHandle pool
                 );
 
                 /**
-                Create a StaticPolynomialArray from a public key. Note that the
+                Create a PolynomialArray from a public key. Note that the
                 special modulus is dropped from this representation.
                 */
-                StaticPolynomialArray(
+                PolynomialArray(
                     const SEALContext &context, const PublicKey &public_key, MemoryPoolHandle pool
                 );
 
-                ~StaticPolynomialArray()
+                ~PolynomialArray()
                 {
                     if (zero_on_destruction_) {
                         util::set_zero_uint(len_, data_.get());
@@ -193,7 +193,7 @@ namespace seal
             private:
                 // We make an independent function instead of setting on
                 // initialization so that we can allocate a
-                // StaticPolynomialArray without knowing the modulus yet (it
+                // PolynomialArray without knowing the modulus yet (it
                 // gets passed in later)
                 void set_modulus(const std::vector<Modulus> &coeff_modulus){
                     coeff_modulus_size_ = coeff_modulus.size();
