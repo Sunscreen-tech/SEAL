@@ -45,6 +45,25 @@ namespace seal
                     const SEALContext &context, const PublicKey &public_key, MemoryPoolHandle pool
                 );
 
+                ~StaticPolynomialArray()
+                {
+                    if (zero_on_destruction_) {
+                        util::set_zero_uint(len_, data_.get());
+
+                        // We also reset all the elements in the class to make
+                        // the bits associated with a deallocated object look
+                        // the same as a new object that is unreserved.
+                        poly_size_ = 0;
+                        coeff_size_ = 0;
+                        coeff_modulus_size_ = 0;
+                        poly_len_ = 0;
+                        len_ = 0;
+                        reserved_ = false;
+                        zero_on_destruction_ = true;
+                        is_rns_ = true;
+                    }
+                }
+
                 /**
                 Reserve space for a specfic polynomial. This can only be called
                 once; further calls with throw a logic error indicating that the
@@ -199,6 +218,7 @@ namespace seal
                 std::size_t poly_len_ = 0;
                 std::size_t len_ = 0;
                 bool reserved_ = false;
+                bool zero_on_destruction_ = true;
 
                 // Is this array in RNS form or in multiprecision form?
                 bool is_rns_ = true;
