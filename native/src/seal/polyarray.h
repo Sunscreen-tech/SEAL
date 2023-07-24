@@ -101,8 +101,17 @@ namespace seal
                 Insert a polynomial into the data array of the
                 */
                 void insert_polynomial(std::size_t poly_index, const uint64_t* array) {
+
+                    // This performs a check that the polynomial is in bounds.
                     auto poly_start = get_polynomial(poly_index);
+
+                    if (polynomial_reserved_[poly_index]) {
+                        throw std::logic_error("Attempted to overwrite a polynomial in PolynomialArray.");
+                    }
+
                     util::set_uint(array, poly_len_, poly_start);
+
+                    polynomial_reserved_[poly_index] = true;
                 }
 
                 /**
@@ -139,7 +148,7 @@ namespace seal
                 SEAL_NODISCARD inline std::uint64_t* get_polynomial(std::size_t poly_index) 
                 {
                     if (poly_index >= poly_size_) {
-                        throw std::logic_error("Polynomial outside of RNS array count");
+                        throw std::logic_error("Polynomial index greater than number of polynomials stored");
                     }
    
                     auto poly_start = data_.get() + poly_len_ * poly_index;
@@ -217,7 +226,10 @@ namespace seal
                 std::size_t coeff_modulus_size_ = 0;
                 std::size_t poly_len_ = 0;
                 std::size_t len_ = 0;
+
                 bool reserved_ = false;
+                std::vector<bool> polynomial_reserved_;
+
                 bool zero_on_destruction_ = true;
 
                 // Is this array in RNS form or in multiprecision form?

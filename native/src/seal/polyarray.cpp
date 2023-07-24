@@ -71,6 +71,7 @@ namespace seal
 
         data_ = allocate<std::uint64_t>(len_, pool_);
 
+        polynomial_reserved_.resize(poly_size_, false);
         reserved_ = true;
     }
 
