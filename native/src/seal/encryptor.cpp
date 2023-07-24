@@ -93,13 +93,26 @@ namespace seal
         PolynomialArray u_destination;
         PolynomialArray e_destination;
 
-        encrypt_zero_internal(parms_id, is_asymmetric, save_seed, false, false, destination, u_destination, e_destination, pool);
+        encrypt_zero_internal(
+            parms_id, 
+            is_asymmetric, 
+            save_seed, 
+            false, 
+            false, 
+            destination, 
+            u_destination, 
+            e_destination, 
+            pool
+        );
     }
 
     void Encryptor::encrypt_zero_internal(
-        parms_id_type parms_id, bool is_asymmetric, bool save_seed, 
+        parms_id_type parms_id, 
+        bool is_asymmetric, 
+        bool save_seed, 
         bool disable_special_modulus,
-        bool export_noise, Ciphertext &destination,
+        bool export_noise, 
+        Ciphertext &destination,
         PolynomialArray &u_destination,
         PolynomialArray &e_destination,
         MemoryPoolHandle pool) const
@@ -150,7 +163,16 @@ namespace seal
 
                 // Zero encryption without modulus switching
                 Ciphertext temp(pool);
-                util::encrypt_zero_asymmetric(public_key_, context_, prev_parms_id, is_ntt_form, false, temp, u_destination, e_destination);
+                util::encrypt_zero_asymmetric(
+                    public_key_, 
+                    context_, 
+                    prev_parms_id, 
+                    is_ntt_form, 
+                    export_noise, 
+                    temp, 
+                    u_destination, 
+                    e_destination
+                );
 
                 // Modulus switching
                 SEAL_ITERATE(iter(temp, destination), temp.size(), [&](auto I) {
@@ -180,7 +202,16 @@ namespace seal
             else
             {
                 // Does not require modulus switching
-                util::encrypt_zero_asymmetric(public_key_, context_, parms_id, is_ntt_form, true, destination, u_destination, e_destination);
+                util::encrypt_zero_asymmetric(
+                    public_key_, 
+                    context_, 
+                    parms_id, 
+                    is_ntt_form, 
+                    export_noise, 
+                    destination, 
+                    u_destination, 
+                    e_destination
+                );
             }
         }
         else
@@ -203,7 +234,6 @@ namespace seal
         PolynomialArray e_destination;
 
         encrypt_internal(plain, is_asymmetric, save_seed, false, false, destination, u_destination, e_destination);
-
     }
 
     void Encryptor::encrypt_internal(

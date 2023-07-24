@@ -190,7 +190,10 @@ namespace seal
         }
 
         void encrypt_zero_asymmetric(
-            const PublicKey &public_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
+            const PublicKey &public_key, 
+            const SEALContext &context, 
+            parms_id_type parms_id, 
+            bool is_ntt_form,
             bool export_noise,
             Ciphertext &destination, 
             PolynomialArray &u_destination,
