@@ -134,7 +134,6 @@ namespace seal
         size_t coeff_modulus_size = parms.coeff_modulus().size();
         size_t coeff_count = parms.poly_modulus_degree();
         bool is_ntt_form = false;
-        size_t encrypted_size = public_key_.data().size();
 
         if (parms.scheme() == scheme_type::ckks)
         {
