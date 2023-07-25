@@ -52,6 +52,29 @@ namespace seal
         }
     }
 
+    PolynomialArray &PolynomialArray::operator=(const PolynomialArray &assign)
+    {
+        // Check for self-assignment
+        if (this == &assign)
+        {
+            return *this;
+        }
+
+        auto poly_size = assign.poly_size();
+        auto coeff_modulus_size = assign.coeff_modulus_size();
+        auto coeff_modulus = assign.coeff_modulus_;
+        auto poly_modulus_degree = assign.poly_modulus_degree();
+
+        // Then reserve
+        reserve(poly_size, poly_modulus_degree, coeff_modulus);
+
+        for (std::size_t i = 0; i < poly_size; i++) {
+            const auto data_ptr = assign.get_polynomial(i);
+            insert_polynomial(i, data_ptr);
+        }
+
+        return *this;
+    }
 
     void PolynomialArray::reserve(
         std::size_t poly_size,
