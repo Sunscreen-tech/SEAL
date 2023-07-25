@@ -188,7 +188,12 @@ namespace seal
                 */
                 SEAL_NODISCARD inline const std::uint64_t *get_polynomial(std::size_t poly_index) const  
                 {
-                    return get_polynomial(poly_index);
+                    if (poly_index >= poly_size_) {
+                        throw std::logic_error("Polynomial index greater than number of polynomials stored");
+                    }
+   
+                    auto poly_start = data_.get() + poly_len_ * poly_index;
+                    return poly_start;
                 }
 
                 /**
