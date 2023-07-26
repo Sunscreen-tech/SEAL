@@ -59,18 +59,6 @@ namespace seal
                 */
                 PolynomialArray(PolynomialArray &&source) = default;
 
-                /**
-                Creates a new ciphertext by copying a given one.
-
-                @param[in] copy The ciphertext to copy from
-                @param[in] pool The MemoryPoolHandle pointing to a valid memory pool
-                @throws std::invalid_argument if pool is uninitialized
-                */
-                PolynomialArray(const PolynomialArray &copy, MemoryPoolHandle pool) : PolynomialArray(std::move(pool))
-                {
-                    *this = copy;
-                }
-
                 ~PolynomialArray()
                 {
                     if (zero_on_destruction_) {
