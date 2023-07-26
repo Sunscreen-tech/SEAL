@@ -85,7 +85,6 @@ SEAL_C_FUNC PolynomialArray_Copy(void *copy, void **poly_array) {
     PolynomialArray *pa = new PolynomialArray(*copyptr);
     *poly_array = pa;
     return S_OK;
-
 }
 
 SEAL_C_FUNC PolynomialArray_Destroy(void *thisptr)
