@@ -52,6 +52,25 @@ namespace seal
         }
     }
 
+    PolynomialArray::PolynomialArray(const PolynomialArray &copy): PolynomialArray(copy.pool_) {
+        // These parameters in the result object are internally stored once
+        // reserve is called.
+        auto poly_size = copy.poly_size();
+        auto coeff_modulus_size = copy.coeff_modulus_size();
+        auto coeff_modulus = copy.coeff_modulus_;
+        auto poly_modulus_degree = copy.poly_modulus_degree();
+
+        // Then reserve
+        reserve(poly_size, poly_modulus_degree, coeff_modulus);
+
+        for (std::size_t i = 0; i < poly_size; i++) {
+            if (copy.polynomial_reserved_[i]) {
+                const auto data_ptr = copy.get_polynomial(i);
+                insert_polynomial(i, data_ptr);
+            }
+        }
+    }
+
     PolynomialArray &PolynomialArray::operator=(const PolynomialArray &assign)
     {
         // Check for self-assignment
@@ -60,6 +79,8 @@ namespace seal
             return *this;
         }
 
+        // These parameters in the result object are internally stored once
+        // reserve is called.
         auto poly_size = assign.poly_size();
         auto coeff_modulus_size = assign.coeff_modulus_size();
         auto coeff_modulus = assign.coeff_modulus_;
@@ -69,8 +90,10 @@ namespace seal
         reserve(poly_size, poly_modulus_degree, coeff_modulus);
 
         for (std::size_t i = 0; i < poly_size; i++) {
-            const auto data_ptr = assign.get_polynomial(i);
-            insert_polynomial(i, data_ptr);
+            if (assign.polynomial_reserved_[i]) {
+                const auto data_ptr = assign.get_polynomial(i);
+                insert_polynomial(i, data_ptr);
+            }
         }
 
         return *this;

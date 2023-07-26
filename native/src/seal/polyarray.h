@@ -46,6 +46,13 @@ namespace seal
                 );
 
                 /**
+                Creates a new ciphertext by copying a given one.
+
+                @param[in] source The ciphertext to move from
+                */
+                PolynomialArray(const PolynomialArray &copy);
+
+                /**
                 Creates a new ciphertext by moving a given one.
 
                 @param[in] source The ciphertext to move from
@@ -59,7 +66,7 @@ namespace seal
                 @param[in] pool The MemoryPoolHandle pointing to a valid memory pool
                 @throws std::invalid_argument if pool is uninitialized
                 */
-                PolynomialArray(const PolynomialArray &copy, MemoryPoolHandle pool = MemoryManager::GetPool()) : PolynomialArray(std::move(pool))
+                PolynomialArray(const PolynomialArray &copy, MemoryPoolHandle pool) : PolynomialArray(std::move(pool))
                 {
                     *this = copy;
                 }
