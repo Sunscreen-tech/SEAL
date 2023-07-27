@@ -12,6 +12,7 @@
 #include "seal/util/polyarithsmallmod.h"
 #include "seal/util/polycore.h"
 #include "seal/util/rlwe.h"
+#include <optional>
 
 using namespace std;
 
@@ -194,10 +195,11 @@ namespace seal
             const SEALContext &context, 
             parms_id_type parms_id, 
             bool is_ntt_form,
-            bool export_noise,
+            bool export_components,
             Ciphertext &destination, 
             PolynomialArray &u_destination,
-            PolynomialArray &e_destination
+            PolynomialArray &e_destination,
+            optional<prng_seed_type> seed
         ) {
 #ifdef SEAL_DEBUG
             if (!is_valid_for(public_key, context))
@@ -229,13 +231,14 @@ namespace seal
             // where e[j] <-- chi, u <-- R_3
 
             // Create a PRNG; u and the noise/error share the same PRNG
-            auto prng = parms.random_generator()->create();
+            auto prng = seed.has_value() ? parms.random_generator()->create(seed.value())
+                                         : parms.random_generator()->create();
 
             // Generate u <-- R_3
             auto u(allocate_poly(coeff_count, coeff_modulus_size, pool));
             sample_poly_ternary(prng, parms, u.get());
 
-            if (export_noise) {
+            if (export_components) {
                 u_destination.reserve(1, coeff_count, coeff_modulus);
                 u_destination.insert_polynomial(0, u.get());
             }
@@ -259,7 +262,7 @@ namespace seal
                 }
             }
 
-            if (export_noise) {
+            if (export_components) {
                 e_destination.reserve(encrypted_size, coeff_count, coeff_modulus);
             }
 
@@ -271,7 +274,7 @@ namespace seal
                 SEAL_NOISE_SAMPLER(prng, parms, u.get());
                 RNSIter gaussian_iter(u.get(), coeff_count);
 
-                if (export_noise) {
+                if (export_components) {
                     e_destination.insert_polynomial(j, u.get());
                 }
 
@@ -298,8 +301,14 @@ namespace seal
         }
 
         void encrypt_zero_symmetric(
-            const SecretKey &secret_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
-            bool save_seed, Ciphertext &destination)
+            const SecretKey &secret_key, 
+            const SEALContext &context, 
+            parms_id_type parms_id, 
+            bool is_ntt_form,
+            bool save_seed, 
+            Ciphertext &destination,
+            optional<prng_seed_type> seed
+        )
         {
 #ifdef SEAL_DEBUG
             if (!is_valid_for(secret_key, context))
@@ -342,7 +351,9 @@ namespace seal
             // Create an instance of a random number generator. We use this for sampling
             // a seed for a second PRNG used for sampling u (the seed can be public
             // information. This PRNG is also used for sampling the noise/error below.
-            auto bootstrap_prng = parms.random_generator()->create();
+            auto bootstrap_prng = seed.has_value() 
+                 ? parms.random_generator()->create(seed.value())
+                 : parms.random_generator()->create();
 
             // Sample a public seed for generating uniform randomness
             prng_seed_type public_prng_seed;
