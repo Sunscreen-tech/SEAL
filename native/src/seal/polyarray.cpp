@@ -12,12 +12,16 @@ namespace seal
         const Ciphertext &ciphertext,
         MemoryPoolHandle pool
     ) : PolynomialArray(pool) {
-
         auto &parms = context.first_context_data()->parms();
         auto &coeff_modulus = parms.coeff_modulus();
         auto coeff_modulus_size = ciphertext.coeff_modulus_size();
         auto poly_modulus_degree = ciphertext.poly_modulus_degree();
         auto num_poly = ciphertext.size();
+
+        auto is_ntt_form = ciphertext.is_ntt_form();
+        size_t coeff_count = parms.poly_modulus_degree();
+        auto &context_data = *context.get_context_data(parms.parms_id());
+        auto ntt_tables = context_data.small_ntt_tables();
 
         reserve(num_poly, poly_modulus_degree, coeff_modulus);
 
@@ -27,6 +31,15 @@ namespace seal
             const auto data_ptr = ciphertext.data() + i * (poly_modulus_degree * coeff_modulus_size);
             insert_polynomial(i, data_ptr);
         }
+
+        if (is_ntt_form) {
+            for (size_t i = 0; i < coeff_modulus_size; i++) {
+                for (size_t j = 0; j < num_poly; j++) {
+                    inverse_ntt_negacyclic_harvey(get_polynomial(j) + i * coeff_count, ntt_tables[i]);
+                }
+            }
+        }
+
     }
 
     PolynomialArray::PolynomialArray(
@@ -36,11 +49,16 @@ namespace seal
     ) : PolynomialArray(pool) {
 
         auto &ciphertext = public_key.data();
-        auto &parms = context.first_context_data()->parms();
+        auto &parms = context.key_context_data()->parms();
         auto &coeff_modulus = parms.coeff_modulus();
         auto coeff_modulus_size = ciphertext.coeff_modulus_size();
         auto poly_modulus_degree = ciphertext.poly_modulus_degree();
         auto num_poly = ciphertext.size();
+
+        auto is_ntt_form = public_key.is_ntt_form();
+        size_t coeff_count = parms.poly_modulus_degree();
+        auto &context_data = *context.get_context_data(parms.parms_id());
+        auto ntt_tables = context_data.small_ntt_tables();
 
         reserve(num_poly, poly_modulus_degree, coeff_modulus);
 
@@ -49,6 +67,14 @@ namespace seal
         for (int i = 0; i < num_poly; i++) {
             const auto data_ptr = ciphertext.data() + i * (poly_modulus_degree * coeff_modulus_size);
             insert_polynomial(i, data_ptr);
+        }
+
+        if (is_ntt_form) {
+            for (size_t i = 0; i < coeff_modulus_size; i++) {
+                for (size_t j = 0; j < num_poly; j++) {
+                    inverse_ntt_negacyclic_harvey(get_polynomial(j) + i * coeff_count, ntt_tables[i]);
+                }
+            }
         }
     }
 
