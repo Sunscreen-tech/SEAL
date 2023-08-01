@@ -230,9 +230,16 @@ namespace seal
             // c[j] = public_key[j] * u + e[j] in BFV/CKKS = public_key[j] * u + p * e[j] in BGV
             // where e[j] <-- chi, u <-- R_3
 
+            
+            // Note: if you need to seed this encryption with a known value,
+            // then this code can be uncommented. Otherwise we do not actually
+            // use the seed if it is provided to ensure the library is not
+            // accidentally insecure.
+            // auto prng = seed.has_value() ? parms.random_generator()->create(seed.value())
+            //                              : parms.random_generator()->create();
+
             // Create a PRNG; u and the noise/error share the same PRNG
-            auto prng = seed.has_value() ? parms.random_generator()->create(seed.value())
-                                         : parms.random_generator()->create();
+            auto prng = parms.random_generator()->create();
 
             // Generate u <-- R_3
             auto u(allocate_poly(coeff_count, coeff_modulus_size, pool));
@@ -348,12 +355,19 @@ namespace seal
             destination.scale() = 1.0;
             destination.correction_factor() = 1;
 
+
+            // Note: if you need to seed this encryption with a known value,
+            // then this code can be uncommented. Otherwise we do not actually
+            // use the seed if it is provided to ensure the library is not
+            // accidentally insecure.
+            // auto bootstrap_prng = seed.has_value() 
+            //      ? parms.random_generator()->create(seed.value())
+            //      : parms.random_generator()->create();
+
             // Create an instance of a random number generator. We use this for sampling
             // a seed for a second PRNG used for sampling u (the seed can be public
             // information. This PRNG is also used for sampling the noise/error below.
-            auto bootstrap_prng = seed.has_value() 
-                 ? parms.random_generator()->create(seed.value())
-                 : parms.random_generator()->create();
+            auto bootstrap_prng = parms.random_generator()->create();
 
             // Sample a public seed for generating uniform randomness
             prng_seed_type public_prng_seed;
