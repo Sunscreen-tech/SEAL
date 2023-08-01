@@ -227,10 +227,10 @@ namespace seal
             destination.scale() = 1.0;
             destination.correction_factor() = 1;
 
-            // c[j] = public_key[j] * u + e[j] in BFV/CKKS = public_key[j] * u + p * e[j] in BGV
+            // c[j] = public_key[j] * u + e[j] in BFV/CKKS 
+            //      = public_key[j] * u + p * e[j] in BGV
             // where e[j] <-- chi, u <-- R_3
 
-            
             // Note: if you need to seed this encryption with a known value,
             // then this code can be uncommented. Otherwise we do not actually
             // use the seed if it is provided to ensure the library is not
@@ -274,7 +274,8 @@ namespace seal
             }
 
             // Generate e_j <-- chi
-            // c[j] = public_key[j] * u + e[j] in BFV/CKKS, = public_key[j] * u + p * e[j] in BGV,
+            // c[j] = public_key[j] * u + e[j] in BFV/CKKS,
+            //      = public_key[j] * u + p * e[j] in BGV,
             for (size_t j = 0; j < encrypted_size; j++)
             {
                 // u is being modified in place to add some error terms.
@@ -354,7 +355,6 @@ namespace seal
             destination.is_ntt_form() = is_ntt_form;
             destination.scale() = 1.0;
             destination.correction_factor() = 1;
-
 
             // Note: if you need to seed this encryption with a known value,
             // then this code can be uncommented. Otherwise we do not actually
