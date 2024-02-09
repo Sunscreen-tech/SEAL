@@ -318,7 +318,9 @@ namespace seal
             parms_id_type parms_id, 
             bool is_ntt_form,
             bool save_seed, 
+            bool export_components,
             Ciphertext &destination,
+            PolynomialArray &e_destination,
             optional<prng_seed_type> seed
         )
         {
@@ -364,14 +366,14 @@ namespace seal
             // then this code can be uncommented. Otherwise we do not actually
             // use the seed if it is provided to ensure the library is not
             // accidentally insecure.
-            // auto bootstrap_prng = seed.has_value() 
-            //      ? parms.random_generator()->create(seed.value())
-            //      : parms.random_generator()->create();
+            auto bootstrap_prng = seed.has_value() 
+                 ? parms.random_generator()->create(seed.value())
+                 : parms.random_generator()->create();
 
             // Create an instance of a random number generator. We use this for sampling
             // a seed for a second PRNG used for sampling u (the seed can be public
             // information. This PRNG is also used for sampling the noise/error below.
-            auto bootstrap_prng = parms.random_generator()->create();
+            // auto bootstrap_prng = parms.random_generator()->create();
 
             // Sample a public seed for generating uniform randomness
             prng_seed_type public_prng_seed;
@@ -405,6 +407,10 @@ namespace seal
             // Sample e <-- chi
             auto noise(allocate_poly(coeff_count, coeff_modulus_size, pool));
             SEAL_NOISE_SAMPLER(bootstrap_prng, parms, noise.get());
+            if (export_components) {
+                e_destination.reserve(1, coeff_count, coeff_modulus);
+                e_destination.insert_polynomial(0, noise.get());
+            }
 
             // Calculate -(as+ e) (mod q) and store in c[0] in BFV/CKKS
             // Calculate -(as+pe) (mod q) and store in c[0] in BGV
