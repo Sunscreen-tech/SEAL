@@ -231,10 +231,7 @@ namespace seal
             //      = public_key[j] * u + p * e[j] in BGV
             // where e[j] <-- chi, u <-- R_3
 
-            // Note: if you need to seed this encryption with a known value,
-            // then this code can be uncommented. Otherwise we do not actually
-            // use the seed if it is provided to ensure the library is not
-            // accidentally insecure.
+            // Note: if a seed is provided, encryption is deterministic and inherently insecure.
             auto prng = seed.has_value() ? parms.random_generator()->create(seed.value())
                                          : parms.random_generator()->create();
 
@@ -362,10 +359,7 @@ namespace seal
             destination.scale() = 1.0;
             destination.correction_factor() = 1;
 
-            // Note: if you need to seed this encryption with a known value,
-            // then this code can be uncommented. Otherwise we do not actually
-            // use the seed if it is provided to ensure the library is not
-            // accidentally insecure.
+            // Note: if a seed is provided, encryption is deterministic and inherently insecure.
             auto bootstrap_prng = seed.has_value() 
                  ? parms.random_generator()->create(seed.value())
                  : parms.random_generator()->create();
