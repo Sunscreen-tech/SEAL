@@ -169,14 +169,14 @@ namespace seal
         // The secret key powers are already NTT transformed.
         dot_product_ct_sk_array(encrypted, tmp_dest_modq, pool_);
 
-        if (noise != nullptr) {
+        if (noise != nullptr)
+        {
             ConstRNSIter noise_poly(tmp_dest_modq);
 
             noise->resize(context_, encrypted.size());
             RNSIter noise_iter(noise->data(), coeff_count);
 
-            multiply_poly_scalar_coeffmod(
-                noise_poly, coeff_modulus_size, plain_modulus.value(), coeff_modulus, noise_iter);
+            multiply_poly_scalar_coeffmod(noise_poly, coeff_modulus_size, 1, coeff_modulus, noise_iter);
 
             context_data.rns_tool()->base_q()->compose_array(noise->data(), coeff_count, pool_);
         }
